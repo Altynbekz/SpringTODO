@@ -76,21 +76,21 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public TaskResponseDto partialUpdateTask(Long id, Map<String, Object> updates) {
-        boolean exists = existsById(id);
+
         TaskEntity entity = taskRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
-
-        if(exists){
-            updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(TaskEntity.class, key);
-                if(field != null){
-                    field.setAccessible(true);
-                    ReflectionUtils.setField(field, entity, value);
-                }
-                taskRepository.save(entity);
-            });
-        }
-
+        updates.forEach((key, value) -> {
+            if(key.equals("id") || key.equals("createdAt")){
+                throw new RuntimeException("Cannot update id or createdAt fields.");
+            }
+            Field field = ReflectionUtils.findField(TaskEntity.class, key);
+            if(field == null){
+                throw new RuntimeException("Field " + key + " does not exist in TaskEntity.");
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, entity, value);}
+                );
+        taskRepository.save(entity);
         return modelMapper.map(entity, TaskResponseDto.class);
     }
 
