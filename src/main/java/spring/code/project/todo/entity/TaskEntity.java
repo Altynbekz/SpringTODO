@@ -1,4 +1,24 @@
 package spring.code.project.todo.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+
+@Entity
+@Data
 public class TaskEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    private String taskDescription;
+    @CreationTimestamp
+    private LocalDate createdAt;
+    private LocalDate dueDate;
+    private boolean status;
 }
