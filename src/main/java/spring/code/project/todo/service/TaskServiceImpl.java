@@ -55,10 +55,10 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) {
+
         TaskEntity entity = taskRepository.
                 findById(id).
-                orElseThrow(() ->
-                        new RuntimeException("Task not found with id: " + id));
+                orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
 
         modelMapper.map(taskRequestDto, entity);
         taskRepository.save(entity);
@@ -79,17 +79,18 @@ public class TaskServiceImpl implements ITaskService {
 
         TaskEntity entity = taskRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
+
         updates.forEach((key, value) -> {
-            if(key.equals("id") || key.equals("createdAt")){
-                throw new RuntimeException("Cannot update id or createdAt fields.");
-            }
+
+            if(key.equals("id") || key.equals("createdAt"))
+            {throw new RuntimeException("Cannot update id or createdAt fields.");}
+
             Field field = ReflectionUtils.findField(TaskEntity.class, key);
-            if(field == null){
-                throw new RuntimeException("Field " + key + " does not exist in TaskEntity.");
-            }
+            if(field == null){throw new RuntimeException("Field " + key + " does not exist in TaskEntity.");}
+
             field.setAccessible(true);
-            ReflectionUtils.setField(field, entity, value);}
-                );
+            ReflectionUtils.setField(field, entity, value);});
+
         taskRepository.save(entity);
         return modelMapper.map(entity, TaskResponseDto.class);
     }
